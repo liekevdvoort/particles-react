@@ -92,6 +92,10 @@ export default function Particles() {
       "aAngle",
       new THREE.BufferAttribute(anglesArray, 1)
     );
+
+    // Performance improvement
+    particlesGeometry.current.setIndex(null);
+    particlesGeometry.current.deleteAttribute("normal");
   }, []);
 
   // Gebruik useLoader om de afbeelding te laden als texture
