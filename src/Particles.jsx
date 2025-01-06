@@ -102,9 +102,19 @@ export default function Particles() {
     /**
      * Displacement
      */
+    // Fade out
+    displacement.current.context.globalCompositeOperation = "source-over";
+    displacement.current.context.globalAlpha = 0.02;
+    displacement.current.context.fillRect(
+      0,
+      0,
+      displacement.current.canvas.width,
+      displacement.current.canvas.height
+    );
     // Draw glow
     const glowSize = displacement.current.canvas.width * 0.25;
     displacement.current.context.globalCompositeOperation = "lighten";
+    displacement.current.context.globalAlpha = 1;
     displacement.current.context.drawImage(
       displacement.current.glowImage,
       displacement.current.canvasCursor.x - glowSize * 0.5,
@@ -132,7 +142,7 @@ export default function Particles() {
           }}
         />
       </points>
-      <mesh ref={interactivePlane} onPointerMove={pointerMove}>
+      <mesh visible={false} ref={interactivePlane} onPointerMove={pointerMove}>
         <planeGeometry args={[10, 10]} />
         <meshBasicMaterial />
       </mesh>
