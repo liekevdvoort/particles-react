@@ -13,7 +13,7 @@ export default function Particles() {
   const {
     // gl, // WebGL renderer
     // scene, // Default scene
-    camera, // Default camera
+    // camera, // Default camera
     raycaster, // Default raycaster
     size, // Bounds of the view (which stretches 100% and auto-adjusts)
     // viewport, // Bounds of the viewport in 3d units + factor (size/viewport)
@@ -82,18 +82,17 @@ export default function Particles() {
     /**
      * Raycaster
      */
-    displacement.current.raycaster.setFromCamera(
-      displacement.current.screenCursor,
-      camera
-    );
-    const intersections = displacement.current.raycaster.intersectObject(
-      interactivePlane.current
-    );
+    // console.log(raycaster);
+    // displacement.current.raycaster.setFromCamera(
+    //   displacement.current.screenCursor,
+    //   camera
+    // );
+    const intersections = raycaster.intersectObject(interactivePlane.current);
 
     if (intersections.length) {
-      console.log(intersections[0]);
+      //   console.log(intersections[0]);
       const uv = intersections[0].uv;
-      console.log(uv);
+      //   console.log(uv);
       displacement.current.canvasCursor.x =
         uv.x * displacement.current.canvas.width;
       displacement.current.canvasCursor.y =
