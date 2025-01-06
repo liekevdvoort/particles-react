@@ -9,6 +9,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 
 export default function Particles() {
   const interactivePlane = useRef();
+  const particlesGeometry = useRef();
   const pixelRatio = Math.min(window.devicePixelRatio, 2);
   const {
     // gl, // WebGL renderer
@@ -66,6 +67,31 @@ export default function Particles() {
     // Glow image
     displacement.current.glowImage = new Image();
     displacement.current.glowImage.src = glow;
+
+    // Particles
+    const intensitiesArray = new Float32Array(
+      particlesGeometry.current.attributes.position.count
+    );
+    const anglesArray = new Float32Array(
+      particlesGeometry.current.attributes.position.count
+    );
+
+    for (
+      let i = 0;
+      i < particlesGeometry.current.attributes.position.count;
+      i++
+    ) {
+      intensitiesArray[i] = Math.random();
+      anglesArray[i] = Math.random() * Math.PI * 2;
+    }
+    particlesGeometry.current.setAttribute(
+      "aIntensity",
+      new THREE.BufferAttribute(intensitiesArray, 1)
+    );
+    particlesGeometry.current.setAttribute(
+      "aAngle",
+      new THREE.BufferAttribute(anglesArray, 1)
+    );
   }, []);
 
   // Gebruik useLoader om de afbeelding te laden als texture
@@ -126,7 +152,7 @@ export default function Particles() {
   return (
     <>
       <points>
-        <planeGeometry args={[10, 10, 128, 128]} />
+        <planeGeometry ref={particlesGeometry} args={[10, 10, 128, 128]} />
         <shaderMaterial
           vertexShader={particlesVertexShader}
           fragmentShader={particlesFragmentShader}
