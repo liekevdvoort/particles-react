@@ -10,19 +10,12 @@ import { useFrame, useThree } from "@react-three/fiber";
 export default function Particles() {
   const interactivePlane = useRef();
   const pixelRatio = Math.min(window.devicePixelRatio, 2);
-  const [sizes, setSizes] = useState(
-    new THREE.Vector2(
-      window.innerWidth * pixelRatio,
-      window.innerHeight * pixelRatio
-    )
-  );
-
   const {
     // gl, // WebGL renderer
     // scene, // Default scene
     camera, // Default camera
     raycaster, // Default raycaster
-    // size, // Bounds of the view (which stretches 100% and auto-adjusts)
+    size, // Bounds of the view (which stretches 100% and auto-adjusts)
     // viewport, // Bounds of the viewport in 3d units + factor (size/viewport)
     // aspect, // Aspect ratio (size.width / size.height)
     // mouse, // Current, centered, normalized 2D mouse coordinates
@@ -73,30 +66,16 @@ export default function Particles() {
     // Glow image
     displacement.current.glowImage = new Image();
     displacement.current.glowImage.src = glow;
-
-    window.addEventListener("pointermove", (event) => {
-      displacement.current.screenCursor.x = (event.clientX / sizes.x) * 2 - 1;
-      displacement.current.screenCursor.y = -(event.clientY / sizes.y) * 2 + 1;
-    });
   }, []);
 
   // Gebruik useLoader om de afbeelding te laden als texture
   const pictureTexture = useTexture(picture1);
 
-  // Update resolution dynamically on window resize
-  useEffect(() => {
-    const handleResize = () => {
-      setSizes(
-        new THREE.Vector2(
-          window.innerWidth * pixelRatio,
-          window.innerHeight * pixelRatio
-        )
-      );
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const pointerMove = (event) => {
+    displacement.current.screenCursor.x = (event.clientX / size.width) * 2 - 1;
+    displacement.current.screenCursor.y =
+      -(event.clientY / size.height) * 2 + 1;
+  };
 
   useFrame(() => {
     // console.log(raycaster);
@@ -144,12 +123,17 @@ export default function Particles() {
           vertexShader={particlesVertexShader}
           fragmentShader={particlesFragmentShader}
           uniforms={{
-            uResolution: { value: sizes },
+            uResolution: {
+              value: new THREE.Vector2(
+                size.height * pixelRatio,
+                size.width * pixelRatio
+              ),
+            },
             uPictureTexture: { value: pictureTexture },
           }}
         />
       </points>
-      <mesh ref={interactivePlane}>
+      <mesh ref={interactivePlane} onPointerMove={pointerMove}>
         <planeGeometry args={[10, 10]} />
         <meshBasicMaterial />
       </mesh>
