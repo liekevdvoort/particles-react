@@ -33,7 +33,7 @@ export default function Particles() {
     canvas: null,
     context: null,
     glowImage: null,
-    raycaster: new THREE.Raycaster(),
+    texture: null,
     screenCursor: new THREE.Vector2(9999, 9999),
     canvasCursor: new THREE.Vector2(9999, 9999),
   });
@@ -77,22 +77,18 @@ export default function Particles() {
       -(event.clientY / size.height) * 2 + 1;
   };
 
+  displacement.current.texture = new THREE.CanvasTexture(
+    displacement.current.canvas
+  );
+
   useFrame(() => {
-    // console.log(raycaster);
     /**
      * Raycaster
      */
-    // console.log(raycaster);
-    // displacement.current.raycaster.setFromCamera(
-    //   displacement.current.screenCursor,
-    //   camera
-    // );
     const intersections = raycaster.intersectObject(interactivePlane.current);
 
     if (intersections.length) {
-      //   console.log(intersections[0]);
       const uv = intersections[0].uv;
-      //   console.log(uv);
       displacement.current.canvasCursor.x =
         uv.x * displacement.current.canvas.width;
       displacement.current.canvasCursor.y =
@@ -122,6 +118,9 @@ export default function Particles() {
       glowSize,
       glowSize
     );
+
+    // Texture
+    displacement.current.texture.needsUpdate = true;
   });
 
   return (
@@ -139,6 +138,9 @@ export default function Particles() {
               ),
             },
             uPictureTexture: { value: pictureTexture },
+            uDisplacementTexture: {
+              value: displacement.current.texture,
+            },
           }}
         />
       </points>
