@@ -37,6 +37,7 @@ export default function Particles() {
     texture: null,
     screenCursor: new THREE.Vector2(9999, 9999),
     canvasCursor: new THREE.Vector2(9999, 9999),
+    canvasCursorPrevious: new THREE.Vector2(9999, 9999),
   });
 
   useEffect(() => {
@@ -137,10 +138,20 @@ export default function Particles() {
       displacement.current.canvas.width,
       displacement.current.canvas.height
     );
+
+    // Speed alpha
+    const cursorDistance = displacement.current.canvasCursorPrevious.distanceTo(
+      displacement.current.canvasCursor
+    );
+    displacement.current.canvasCursorPrevious.copy(
+      displacement.current.canvasCursor
+    );
+    const alpha = Math.min(cursorDistance * 0.1, 1);
+
     // Draw glow
     const glowSize = displacement.current.canvas.width * 0.25;
     displacement.current.context.globalCompositeOperation = "lighten";
-    displacement.current.context.globalAlpha = 1;
+    displacement.current.context.globalAlpha = alpha;
     displacement.current.context.drawImage(
       displacement.current.glowImage,
       displacement.current.canvasCursor.x - glowSize * 0.5,
